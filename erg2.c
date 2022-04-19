@@ -13,7 +13,7 @@ int i,ID[10],IDnew[10],check,j;
 void child()
 {
 	int count=1;
-	raise(SIGSTOP); //stamata thn diergasia mexris otou na dothei kapoio allo shma apo thn allarm_handler
+	raise(SIGSTOP); //stop pid until a signal is given from allarm_handler
 	i+=1;
 	while(1){
 		printf("Child%d %d is executed goneas(%d) (%d) \n",i,getpid(),getppid(),count);
@@ -24,29 +24,29 @@ void child()
 
 void alarm_handler (int sig)
 {
-	kill(IDnew[i],SIGSTOP); //sou stamataei thn diergasia tou i-ostou orismatos
+	kill(IDnew[i],SIGSTOP); //stops the pid of the i-nth argument
 	
-	if(i==j-2) //ean to i-osto orisma mas einai to teleutaio
+	if(i==j-2) //if our i-nth argument is the last
 	{ 
-		i=0; //paei ksana sto prwto orisma
-		check+=1; //auksanei se poia ektelesh ths diergasias briskomaste
-		if(check==4) //ean prokeitai gia thn 4+1=5h tote stamata oles tis diergasies kai tupwnei terminated
+		i=0; //it goes again to the first argument
+		check+=1; //raises the counter, that indicates the number of pid
+		if(check==4) //if counter5 then stops every pid and output->"terminated"
 		{
 			for(i=0; i<j-1; i++)
 			{
 				kill(IDnew[i],SIGTERM);
 			}
 			printf("terminated\n");
-			exit(0); //bgainei apo oles tis diergasies
+			exit(0); //Exits every pid
 		}
 		alarm(3);
-		kill(IDnew[i],SIGCONT); //tou dinei shmashma na paei sto epomeno orisma
+		kill(IDnew[i],SIGCONT); //gives signal to go to the next argument
 	}
-	else //se allh periptwsh phgainei sto epomeno orisma-diergasia
+	else //in other case it goes to the argument-pid
 	{
 		i+=1;
 		alarm(3);
-		kill(IDnew[i],SIGCONT); //kai tou leei na sunexisei
+		kill(IDnew[i],SIGCONT); //And it commands to keep going
 	}
 }
 	
